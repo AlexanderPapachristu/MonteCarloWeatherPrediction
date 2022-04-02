@@ -5,37 +5,45 @@ import pandas as pdb
 #Row[2] are months
 #Row[3] are days
 #Row[4] are months
+#Row[5] are max temperature
+#Row[6] are min temperature
+
+########Initialize all variables###########
+conditions ={'Rain': 0, "Partly Cloudy": 0, "Clear": 0, "Snow": 0, "Overcast": 0}
+maxTemp = 0
+minTemp = 0
+yearCount = 0
+###########################################
 
 print("Enter month to predict (as number ie. January = 1): ")
 month = input()
 print("Enter day to predict: ")
 day = input()
-rain=0
-partC=0
-clear=0
-snow=0
-overcast=0
+
 
 with open('TorontoWeatherFormatted2.csv') as file:
     csv_reader = csv.reader(file, delimiter=',')
     line_count = 0
     for row in csv_reader:
-        if line_count == 0:
+        if line_count == 0: #looks at first line but does nothing as these are just titles
             #print(f'Column names are {", ".join(row)}')
             line_count += 1
-        else:
-            if month in {row[2]} and day in {row[3]}:
-                print(row[11])
+        else: #parse through the rest of the data
+            if month in {row[2]} and day in {row[3]}: #match the day and month in data file with the query
+                maxTemp += float(row[5])
+                minTemp += float(row[6])
+                yearCount += 1
                 if row[11] == 'Rain' or row[12] == 'Rain':
-                    rain += 1
+                    conditions["Rain"] += 1
                 elif row[11] == 'Partly Cloudy' or row[12] == 'Partly Cloudy':
-                    partC += 1
+                    conditions["Partly Cloudy"] += 1
                 elif row[11] == 'Clear' or row[12] == 'Clear':
-                    clear += 1
+                    conditions["Clear"] += 1
                 elif row[11] == 'Snow' or row[12] == 'Snow':
-                    snow += 1
+                    conditions["Snow"] += 1
                 elif row[11] == 'Overcast' or row[12] == 'Overcast':
-                    overcast += 1
-                #print(f'\tDate: {row[1]}')
+                    conditions["Overcast"] += 1
             line_count += 1
-    print(f'Processed {line_count} lines.')
+
+weather = max(conditions, key=conditions.get)
+print("On ", month, "/", day, ": \nMaximum Temperature: ", round(maxTemp/yearCount,1) , "\nMinimum Temperature: ", round(minTemp/yearCount, 1) , "\nWeather Condition: ", weather)
